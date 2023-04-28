@@ -1,0 +1,147 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="bulma.min.css">
+</head>
+
+<script>
+    function createChatBubble() {
+        const bubble = document.createElement("div");
+        const time = document.createElement("time");
+        const content = document.createElement("div");
+
+        content.innerHTML = document.getElementById('message').value;
+
+        const now = new Date();
+        time.innerHTML = `${now.getHours()}:${now.getMinutes()}`
+
+        bubble.appendChild(time);
+        bubble.appendChild(content);
+
+        bubble.classList.add('chatbubble', 'chatbubble-left');
+        time.classList.add('is-size-7');
+        content.classList.add('is-size-6');
+
+        const chatbox = document.getElementById('chatbox');
+
+        chatbox.appendChild(bubble);
+    }
+
+    function handleKeypress(e) {
+        if (e.key === 'Enter') {
+            createChatBubble();
+        }
+    }
+</script>
+
+<style>
+    .border {
+        border: 1px solid black;
+    }
+
+    .flex-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .h-full {
+        height: 100%;
+    }
+
+    .w-full {
+        width: 100%
+    }
+
+    .chat {
+        flex-grow: 1;
+    }
+
+    html,
+    body {
+        height: 100%;
+    }
+
+    body {
+        padding: 0.5rem;
+    }
+
+    .chatbubble {
+        border: 1px solid black;
+        padding: 0.5rem;
+        margin-bottom: 0.8rem;
+        max-width: 60%;
+        min-width: 35%;
+        word-wrap: break-word;
+        border-radius: 10px;
+        box-shadow: 2px 2px 2px gray;
+    }
+
+    .chatbubble-left {
+        margin-right: auto;
+    }
+
+    .chatbubble-right {
+        margin-left: auto;
+    }
+</style>
+
+<body>
+    <div class="columns h-full">
+        <div class="column is-one-third border">
+            <nav class="panel">
+                <p class="panel-heading">
+                    Kontakte
+                </p>
+                <div class="panel-block">
+                    <p class="control has-icons-left">
+                        <input class="input" type="text" placeholder="Search">
+                        <span class="icon is-left">
+                            <i class="fas fa-search" aria-hidden="true"></i>
+                        </span>
+                    </p>
+                </div>
+                <a class="panel-block is-active">
+                    <span class="panel-icon">
+                        <i class="fas fa-book" aria-hidden="true"></i>
+                    </span>
+                    Rainer Zufall
+                </a>
+                <a class="panel-block">
+                    <span class="panel-icon">
+                        <i class="fas fa-book" aria-hidden="true"></i>
+                    </span>
+                    Claire Grube
+                </a>
+            </nav>
+        </div>
+        <div class="column border">
+            <div class="flex-container h-full">
+                <div class="box has-text-centered">Rainer Zufall</div>
+                <div id="chatbox" class="box chat">
+                    <div class="chatbubble chatbubble-left">
+                        <time class="is-size-7">11:18</time>
+                        <div class="is-size-6">asdf</div>
+                    </div>
+                    <div class="chatbubble chatbubble-right">
+                        asdf
+                    </div>
+                </div>
+                <div class="field has-addons">
+                    <div class="control w-full">
+                        <input onkeypress="handleKeypress(event)" id="message" class="input" type="text"
+                            placeholder="Please enter your message...">
+                    </div>
+                    <div class="control">
+                        <button onclick="createChatBubble()" class="button">
+                            Send
+                        </button>
+                    </div>
+                </div>
+                <!-- <div class="box">box3</div> -->
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
