@@ -2,69 +2,49 @@
 
 <head>
     <link rel="stylesheet" href="bulma.min.css">
+    <script src="script.js"></script>
 </head>
 
-<script>
-    function createChatBubble() {
-        const bubble = document.createElement("div");
-        const time = document.createElement("time");
-        const content = document.createElement("div");
-
-        content.innerHTML = document.getElementById('message').value;
-
-        const now = new Date();
-        time.innerHTML = `${now.getHours()}:${now.getMinutes()}`
-
-        bubble.appendChild(time);
-        bubble.appendChild(content);
-
-        bubble.classList.add('chatbubble', 'chatbubble-left');
-        time.classList.add('is-size-7');
-        content.classList.add('is-size-6');
-
-        const chatbox = document.getElementById('chatbox');
-
-        chatbox.appendChild(bubble);
-    }
-
-    function handleKeypress(e) {
-        if (e.key === 'Enter') {
-            createChatBubble();
-        }
-    }
-</script>
-
 <style>
+    /* Ursprüngliche Border-Klasse zur Visualisierung von Komponentengrößen und -limits */
     .border {
-        border: 1px solid black;
+        /* border: 1px solid black; */
     }
 
+    /* Flex-Container um ein Spaltenweises Layout mit einer 100% Höhe abbilden zu können (für flexgrow in .chat) */
     .flex-container {
         display: flex;
         flex-direction: column;
     }
 
+    /* 100% Höhe  */
     .h-full {
         height: 100%;
     }
 
+    /* 100% Breite  */
     .w-full {
         width: 100%
     }
 
+    /* Scroll- und Größeneinstellung für den Chat */
     .chat {
         flex-grow: 1;
+        overflow: auto;
     }
 
+    /* Workaround, weil bei manchen der Body nicht 100% height hat */
     html,
     body {
         height: 100%;
     }
 
+    /* Leichten Abstand nach Außen, sodass die Komponenten nicht an den Browserrand ecken */
     body {
         padding: 0.5rem;
     }
 
+    /* Geteilte Formatierung der Chatbubbles */
     .chatbubble {
         border: 1px solid black;
         padding: 0.5rem;
@@ -76,18 +56,31 @@
         box-shadow: 2px 2px 2px gray;
     }
 
+    /* Left- und right-alignment der Chatbubbles, sowie custom Formatierung */
     .chatbubble-left {
         margin-right: auto;
+        background-color: lightgreen;
     }
 
     .chatbubble-right {
         margin-left: auto;
+        background-color: lightblue;
+    }
+
+    /* Trotz des word-wrap: break-word versagt der Browser
+    bei sehr langem Text der keine Trennzeichen wie Leerzeichen,
+    Bindestriche oder sonstige Satzzeichen hat, den Text umzubrechen.
+    Um zu vermeiden, dass das ausartet und die Chatbubble zu groß wird,
+    brauch die rechte Hälfte eine maximale Breite, und die bekommt sie hier.
+    Die Aufteilung ist 1/3 und 2/3, und 2/3 sind etwa 66.66667%. */
+    .right {
+        max-width: 66.66667%
     }
 </style>
 
 <body>
     <div class="columns h-full">
-        <div class="column is-one-third border">
+        <div class="column right is-one-third border">
             <nav class="panel">
                 <p class="panel-heading">
                     Kontakte
@@ -114,17 +107,11 @@
                 </a>
             </nav>
         </div>
-        <div class="column border">
+        <div class="column border right">
             <div class="flex-container h-full">
                 <div class="box has-text-centered">Rainer Zufall</div>
-                <div id="chatbox" class="box chat">
-                    <div class="chatbubble chatbubble-left">
-                        <time class="is-size-7">11:18</time>
-                        <div class="is-size-6">asdf</div>
-                    </div>
-                    <div class="chatbubble chatbubble-right">
-                        asdf
-                    </div>
+                <div id="chatbox" class="box chat flex-container">
+                    <!-- Hier gehören die Chatbubbles hin -->
                 </div>
                 <div class="field has-addons">
                     <div class="control w-full">
@@ -132,12 +119,11 @@
                             placeholder="Please enter your message...">
                     </div>
                     <div class="control">
-                        <button onclick="createChatBubble()" class="button">
+                        <button onclick="sendMessage()" class="button">
                             Send
                         </button>
                     </div>
                 </div>
-                <!-- <div class="box">box3</div> -->
             </div>
         </div>
 
