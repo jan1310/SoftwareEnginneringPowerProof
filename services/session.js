@@ -5,9 +5,13 @@ const config = require('../config');
 exports.getSession = async function (token, db) {
     if (!token) return null;
 
-    const session = await db('Session').where({ token }).first();
+    const session = await db('Session')
+        .innerJoin('User', 'User.idUser', '=', 'Session.user_id')
+        .select(['idUser', 'firstName', 'lastName', 'expiresAt', 'token'])
+        .where({ token })
+        .first();
 
-    if (session.expiresAt <= Date.now()) {
+    if (session && session.expiresAt <= Date.now()) {
         await exports.destroySession(token, db);
         return null;
     }
