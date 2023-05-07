@@ -9,7 +9,7 @@ exports.getAll = async function (session, db) {
                 LEFT JOIN "Message" M on C."idChat" = M.chat_id
         WHERE "idUser" != :idUser
         GROUP BY "idUser", "fromUser_id", "toUser_id", "idChat"
-        ORDER BY MAX("sentAt") DESC`,
+        ORDER BY MAX("sentAt") DESC NULLS LAST, "firstName", "lastName"`,
         { idUser },
     );
 

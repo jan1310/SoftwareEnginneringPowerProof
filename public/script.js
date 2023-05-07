@@ -137,13 +137,67 @@ function handleKeypress(e) {
     }
 }
 
+let activeContactContainer = null;
+
+function createContact(user) {
+    const name = `${user.firstName} ${user.lastName}`;
+    const lastMessageTimestamp = parseInt(user.maxSentAt);
+    const id = user.idUser;
+
+    const contactPanel = document.getElementById('contacts');
+
+    const entry = document.createElement('a');
+    const timeTag = document.createElement('time');
+
+    timeTag.classList.add('contact-timestamp');
+    timeTag.innerText = `Letzte Nachricht: ${
+        lastMessageTimestamp ? formatTimestamp(lastMessageTimestamp) : 'nie'
+    }`;
+
+    entry.innerText = name;
+    entry.appendChild(timeTag);
+    entry.classList.add('panel-block', 'flex-container');
+
+    contactPanel.appendChild(entry);
+
+    entry.addEventListener('click', async function (event) {
+        if (activeContactContainer === this) {
+            return;
+        }
+
+        if (activeContactContainer) {
+            activeContactContainer.classList.remove('active-contact');
+        }
+
+        this.classList.add('active-contact');
+        activeContactContainer = this;
+
+        document.getElementById('selected-user-name').innerText = name;
+
+        let chatID = user.idChat;
+
+        if (!chatID) {
+            chatID = await POST('chats', { targetUser: id });
+        }
+
+        const messages = await GET(`chats/${chatID}/messages`);
+
+        for (const message of messages) {
+            console.warn('message', message);
+        }
+    });
+}
+
 let session = null;
 
 // Attach an event listener to when the entire DOM is rendered
 document.addEventListener('DOMContentLoaded', async function () {
     // Load all contacts
-    const result = await GET('users');
-    console.log(result);
+    const users = await GET('users');
+
+    for (const user of users) {
+        createContact(user);
+    }
 
     // Load session
     session = await GET('session');
