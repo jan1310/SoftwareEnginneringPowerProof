@@ -27,11 +27,18 @@ module.exports = async function (router) {
                 .json({ error: 'Invalid ID passed, expected a numeric ID' });
         }
 
+        if (req.query.since && isNaN(parseInt(req.query.since))) {
+            return res
+                .status(400)
+                .json({ error: 'Since is only valid with a proper number' });
+        }
+
         try {
             const result = await chatService.getMessages(
                 idChat,
                 req.session,
                 req.app.get('db'),
+                req.query.since,
             );
 
             res.json(result);

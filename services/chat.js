@@ -22,7 +22,7 @@ exports.createChat = async function (targetUser, session, db) {
     }
 };
 
-exports.getMessages = async function (idChat, session, db) {
+exports.getMessages = async function (idChat, session, db, since = null) {
     const idUser = session.idUser;
 
     const targetChat = await db('Chat')
@@ -36,10 +36,16 @@ exports.getMessages = async function (idChat, session, db) {
         throw new Error(constants.CHAT_NOT_FOUND);
     }
 
-    const messages = await db('Message')
+    const messageQuery = db('Message')
         .where({ chat_id: idChat })
-        .select('sentAt', 'content', 'user_id')
+        .select('sentAt', 'content', 'user_id', 'idMessage')
         .orderBy('sentAt', 'asc');
+
+    if (since) {
+        messageQuery.where('sentAt', '>', since);
+    }
+
+    const messages = await messageQuery;
 
     return messages;
 };

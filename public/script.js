@@ -63,9 +63,17 @@ function formatTimestamp(date) {
  * @param {Boolean} me Whether the user is me or not (to determine if to render left or right)
  * @returns undefined
  */
-function createChatBubble(content, timestamp, me = true) {
+function createChatBubble(content, timestamp, me = true, id) {
     // If content is falsy (mainly for '', early return and don't append an empty chat bubble)
     if (!content) {
+        return;
+    }
+
+    const containerID = `message-${id}`;
+
+    const elem = document.getElementById(containerID);
+
+    if (elem) {
         return;
     }
 
@@ -75,6 +83,8 @@ function createChatBubble(content, timestamp, me = true) {
     const time = document.createElement('time');
     // Create the div that contains the text content
     const bubblecontent = document.createElement('div');
+
+    bubble.setAttribute('id', containerID);
 
     // Set the text content to the parameter provided by the function
     bubblecontent.innerHTML = content;
@@ -127,7 +137,7 @@ async function sendMessage() {
         content: content,
     });
 
-    createChatBubble(result.content, result.sentAt, true);
+    createChatBubble(result.content, result.sentAt, true, result.idMessage);
     document.getElementById('message').value = '';
 }
 
@@ -192,12 +202,18 @@ function createContact(user) {
         let chatID = user.idChat;
 
         if (!chatID) {
-            chatID = await POST('chats', { targetUser: id });
+            chatID = (await POST('chats', { targetUser: id })).idChat;
         }
 
         activeChatID = chatID;
 
+        document.getElementById('chat-half').style.visibility = 'visible';
+
         const messages = await GET(`chats/${chatID}/messages`);
+
+        lastLoad = messages.length
+            ? messages[messages.length - 1].sentAt
+            : Date.now();
 
         clearChatbox();
 
@@ -206,9 +222,39 @@ function createContact(user) {
                 message.content,
                 parseInt(message.sentAt),
                 message.user_id === session.idUser,
+                message.idMessage,
             );
         }
+
+        if (loadTimeout) clearTimeout(loadTimeout);
+        loadTimeout = setTimeout(updateChat, 3000);
     });
+}
+
+let lastLoad = null;
+let loadTimeout = null;
+
+async function updateChat() {
+    if (activeChatID) {
+        const messages = await GET(
+            `chats/${activeChatID}/messages?since=${lastLoad}`,
+        );
+        lastLoad = messages.length
+            ? messages[messages.length - 1].sentAt
+            : Date.now();
+
+        for (const message of messages) {
+            createChatBubble(
+                message.content,
+                parseInt(message.sentAt),
+                message.user_id === session.idUser,
+                message.idMessage,
+            );
+        }
+    }
+
+    // Queue again
+    loadTimeout = setTimeout(updateChat, 1000);
 }
 
 let session = null;
