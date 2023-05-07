@@ -7,8 +7,8 @@ exports.getSession = async function (token, db) {
 
     const session = await db('Session').where({ token }).first();
 
-    if (session.expiresAt >= Date.now()) {
-        await exports.destroySession();
+    if (session.expiresAt <= Date.now()) {
+        await exports.destroySession(token, db);
         return null;
     }
 
