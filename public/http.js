@@ -1,6 +1,6 @@
 async function httpRequest(url, verb, body, headers, raw) {
     const response = await fetch(
-        `http://${location.hostname}:${location.port}/` + url,
+        `http://${location.hostname}:${location.port}/api/` + url,
         {
             verb,
             body,

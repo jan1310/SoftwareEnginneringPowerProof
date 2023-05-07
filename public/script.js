@@ -137,8 +137,16 @@ function handleKeypress(e) {
     }
 }
 
+let session = null;
+
 // Attach an event listener to when the entire DOM is rendered
 document.addEventListener('DOMContentLoaded', async function () {
+    // Load all contacts
     const result = await GET('users');
     console.log(result);
+
+    // Load session
+    session = await GET('session');
+
+    console.log(session);
 });
