@@ -5,4 +5,5 @@ module.exports = {
         { method: 'POST', path: '/api/session' },
         { method: 'GET', path: '/login.html' },
     ],
+    databaseConnection: require('./config-db'), // must export something like postgres://user:password@host:port/database
 };
