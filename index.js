@@ -23,6 +23,7 @@ async function start() {
         //
         require('./routes/chats'),
         require('./routes/session'),
+        require('./routes/users'),
     ];
 
     for (const file of middlewares.concat(routes)) {
