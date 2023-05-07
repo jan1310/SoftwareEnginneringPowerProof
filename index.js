@@ -1,26 +1,30 @@
+const config = require('./config');
+
 const express = require('express');
 const app = express();
 
 app.use(express.json());
 app.use(express.static('public'));
 
-const messages = [
-    {sender: 1, message: 'Hi', timestamp: '2023-05-03 11:18'},
-    {sender: 2, message: 'Moin', timestamp: '2023-05-03 11:18'},
-    {sender: 1, message: 'Was geht?', timestamp: '2023-05-03 11:18'},
-    {sender: 2, message: 'Alles', timestamp: '2023-05-03 11:18'},
-    {sender: 2, message: 'Pls respond', timestamp: '2023-05-03 11:18'},
-];
+async function start() {
+    const middlewares = [
+        //
+        require('./middlewares/01_session'),
+    ];
 
-app.get('/api/', async function(req, res) {
-    res.json(messages);
-});
+    const routes = [
+        //
+        require('./routes/chats'),
+        require('./routes/session'),
+    ];
 
-app.post('/api/', async function(req, res) {
-    messages.push(req.body);
-    res.json({success: true});
-});
+    for (const file of middlewares.concat(routes)) {
+        await file(app);
+    }
 
-app.listen(3001, function() {
-    console.log("App started on port 3001");
-})
+    app.listen(config.port, function () {
+        console.log(`App started on port ${config.port}`);
+    });
+}
+
+start();
