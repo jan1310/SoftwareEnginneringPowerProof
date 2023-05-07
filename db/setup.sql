@@ -23,8 +23,9 @@ CREATE TABLE IF NOT EXISTS "Session" (
 CREATE TABLE IF NOT EXISTS "Message" (
     "idMessage" serial primary key,
     content TEXT not null,
-    sentAt bigint,
-    "user_id" int not null references "User" ("idUser")
+    "sentAt" bigint,
+    "user_id" int not null references "User" ("idUser"),
+    "chat_id" int not null references "Chat" ("idChat")
 );
 
 INSERT INTO
