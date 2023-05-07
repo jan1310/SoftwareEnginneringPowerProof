@@ -1,5 +1,6 @@
 const service = require('../services/session');
 const constants = require('../services/constants');
+const config = require('../config');
 
 module.exports = async function (router) {
     router.get('/api/session', async function (req, res) {
@@ -13,6 +14,8 @@ module.exports = async function (router) {
                 req.body.password,
                 req.app.get('db'),
             );
+
+            res.cookie(config.cookieName, result.token);
 
             res.json(result);
         } catch (e) {

@@ -1,6 +1,7 @@
 const config = require('./config');
 
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const knex = require('knex');
 
@@ -12,9 +13,10 @@ async function start() {
 
     const middlewares = [
         //
+        (app) => app.use(express.json()),
+        (app) => app.use(cookieParser(config.cookieSecret)),
         require('./middlewares/01_session'),
         (app) => app.use(express.static('public')),
-        (app) => app.use(express.json()),
     ];
 
     const routes = [

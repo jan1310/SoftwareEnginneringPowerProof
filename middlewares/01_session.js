@@ -32,7 +32,7 @@ module.exports = async function (app) {
         );
 
         if (!isPublicPath) {
-            const token = req.headers['hsw-chat'];
+            const token = req.cookies[config.cookieName];
             const userSession = await session.getSession(token, db);
 
             if (!userSession) {
