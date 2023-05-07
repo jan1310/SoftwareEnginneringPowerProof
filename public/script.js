@@ -137,55 +137,8 @@ function handleKeypress(e) {
     }
 }
 
-/**
- * Relatively simply loads the messages from the backend and returns the response as JSON.
- * @returns
- */
-async function load() {
-    return (await fetch('http://localhost:3001/api/')).json();
-}
-
 // Attach an event listener to when the entire DOM is rendered
 document.addEventListener('DOMContentLoaded', async function () {
-    // Load all messages from the API
-    const messages = await load();
-
-    // Go through each message...
-    for (const message of messages) {
-        // And create chat bubbles, assuming that we are ID 1.
-        createChatBubble(
-            message.message,
-            new Date(message.timestamp),
-            message.sender == 1,
-        );
-    }
+    const result = await GET('users');
+    console.log(result);
 });
-
-async function httpRequest(url, verb, body, headers) {
-    return fetch(url, {
-        verb,
-        body,
-        headers: Object.assign(
-            {
-                'Content-Type': 'application/json',
-            },
-            headers || {},
-        ),
-    });
-}
-
-async function GET(url) {
-    return httpRequest(url, 'get', null, null);
-}
-
-async function POST(url, body) {
-    return httpRequest(url, 'post', JSON.stringify(body || {}), null);
-}
-
-async function PUT(url, body) {
-    return httpRequest(url, 'put', JSON.stringify(body || {}), null);
-}
-
-async function DELETE(url) {
-    return httpRequest(url, 'delete', null, null);
-}
