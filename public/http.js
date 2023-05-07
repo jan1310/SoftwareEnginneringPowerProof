@@ -2,7 +2,7 @@ async function httpRequest(url, verb, body, headers, raw) {
     const response = await fetch(
         `http://${location.hostname}:${location.port}/api/` + url,
         {
-            verb,
+            method: verb,
             body,
             headers: Object.assign(
                 {
