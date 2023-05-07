@@ -27,4 +27,10 @@ module.exports = async function (router) {
             }
         }
     });
+
+    router.get('/api/logout', async function (req, res) {
+        await service.destroySession(req.session.token, req.app.get('db'));
+        res.clearCookie(config.cookieName);
+        res.json({ success: true });
+    });
 };
