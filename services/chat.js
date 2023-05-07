@@ -1,3 +1,5 @@
+const constants = require('./constants');
+
 exports.createChat = async function (targetUser, session, db) {
     const idUser = session.idUser;
 
@@ -18,4 +20,52 @@ exports.createChat = async function (targetUser, session, db) {
     } else {
         return existingChat;
     }
+};
+
+exports.getMessages = async function (idChat, session, db) {
+    const idUser = session.idUser;
+
+    const targetChat = await db('Chat')
+        .where({ idChat })
+        .where((qb) =>
+            qb.where({ fromUser_id: idUser }).orWhere({ toUser_id: idUser }),
+        )
+        .first('idChat');
+
+    if (!targetChat) {
+        throw new Error(constants.CHAT_NOT_FOUND);
+    }
+
+    const messages = await db('Message')
+        .where({ chat_id: idChat })
+        .select('sentAt', 'content', 'user_id')
+        .orderBy('sentAt', 'asc');
+
+    return messages;
+};
+
+exports.createMessage = async function (idChat, content, session, db) {
+    const idUser = session.idUser;
+
+    const targetChat = await db('Chat')
+        .where({ idChat })
+        .where((qb) =>
+            qb.where({ fromUser_id: idUser }).orWhere({ toUser_id: idUser }),
+        )
+        .first('idChat');
+
+    if (!targetChat) {
+        throw new Error(constants.CHAT_NOT_FOUND);
+    }
+
+    const created = await db('Message')
+        .insert({
+            chat_id: idChat,
+            user_id: idUser,
+            content,
+            sentAt: Date.now(),
+        })
+        .returning('*');
+
+    return created[0];
 };

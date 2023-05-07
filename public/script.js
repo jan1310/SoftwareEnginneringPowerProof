@@ -25,6 +25,10 @@ function formatNumber(val) {
 function formatTimestamp(date) {
     let d = null;
 
+    if (!isNaN(parseInt(date))) {
+        date = parseInt(date);
+    }
+
     if (date instanceof Date) {
         // Check if a date was passed
         d = date;
@@ -116,12 +120,14 @@ function getMe() {
  *
  * Also empties the message field so a new message can be entered.
  */
-function sendMessage() {
-    createChatBubble(
-        document.getElementById('message').value,
-        new Date(),
-        true,
-    );
+async function sendMessage() {
+    const content = document.getElementById('message').value;
+
+    const result = await POST(`chats/${activeChatID}/messages`, {
+        content: content,
+    });
+
+    createChatBubble(result.content, result.sentAt, true);
     document.getElementById('message').value = '';
 }
 
@@ -138,6 +144,15 @@ function handleKeypress(e) {
 }
 
 let activeContactContainer = null;
+let activeChatID = null;
+
+function clearChatbox() {
+    const chatbox = document.getElementById('chatbox');
+
+    while (chatbox.lastChild) {
+        chatbox.removeChild(chatbox.lastChild);
+    }
+}
 
 function createContact(user) {
     const name = `${user.firstName} ${user.lastName}`;
@@ -180,10 +195,18 @@ function createContact(user) {
             chatID = await POST('chats', { targetUser: id });
         }
 
+        activeChatID = chatID;
+
         const messages = await GET(`chats/${chatID}/messages`);
 
+        clearChatbox();
+
         for (const message of messages) {
-            console.warn('message', message);
+            createChatBubble(
+                message.content,
+                parseInt(message.sentAt),
+                message.user_id === session.idUser,
+            );
         }
     });
 }
