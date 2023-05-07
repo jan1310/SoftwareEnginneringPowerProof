@@ -56,7 +56,11 @@ module.exports = async function (app) {
             } else {
                 await session.prolongSession(token, db);
                 req.session = userSession;
-                log(`${method} ${path} valid session ${userSession}`);
+                log(
+                    `${method} ${path} valid session ${JSON.stringify(
+                        userSession,
+                    )}`,
+                );
             }
         } else {
             log(`${method} ${path} is public, no session required.`);
