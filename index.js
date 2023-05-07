@@ -2,14 +2,19 @@ const config = require('./config');
 
 const express = require('express');
 const app = express();
-
-app.use(express.json());
-app.use(express.static('public'));
+const knex = require('knex');
 
 async function start() {
+    // Initialize db connection
+    const db = knex(config.databaseConnection);
+
+    app.set('db', db);
+
     const middlewares = [
         //
         require('./middlewares/01_session'),
+        (app) => app.use(express.static('public')),
+        (app) => app.use(express.json()),
     ];
 
     const routes = [
