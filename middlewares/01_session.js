@@ -54,6 +54,7 @@ module.exports = async function (app) {
                         .end();
                 }
             } else {
+                await session.prolongSession(token, db);
                 req.session = userSession;
                 log(`${method} ${path} valid session ${userSession}`);
             }

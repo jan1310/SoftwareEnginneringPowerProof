@@ -41,3 +41,9 @@ exports.createSession = async function (name, password, db) {
 exports.destroySession = async function (token, db) {
     await db('Session').where({ token }).delete();
 };
+
+exports.prolongSession = async function (token, db) {
+    await db('Session')
+        .update({ expiresAt: Date.now() + config.tokenTTL })
+        .where({ token });
+};
