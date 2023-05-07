@@ -24,7 +24,14 @@
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                })
+                });
+
+                const data = await response.json();
+
+                // Set the received token for our session
+                window.localStorage.setItem('hsw-api-key', data.token);
+                // And redirect to the application
+                window.location.assign('/');
             } catch (e) {
                 console.error(e);
             }
