@@ -4,6 +4,7 @@ module.exports = {
     publicPaths: [
         { method: 'POST', path: '/api/session' },
         { method: 'GET', path: '/login.html' },
+        { method: 'GET', path: '/bulma.min.css' },
     ],
     databaseConnection: require('./config-db'), // must export something like postgres://user:password@host:port/database
 };
