@@ -28,6 +28,9 @@ CREATE TABLE IF NOT EXISTS "Message" (
     "chat_id" int not null references "Chat" ("idChat")
 );
 
+DELETE FROM
+    "User";
+
 INSERT INTO
     public."User" (
         "idUser",

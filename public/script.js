@@ -139,11 +139,43 @@ function handleKeypress(e) {
 
 let session = null;
 
+function createContact(user) {
+    const entry = document.createElement('a');
+    entry.setAttribute('class', 'panel-block');
+
+    // Alternativ das hier, um eine Klasse hinzuzufügen
+    // entry.classList.add('panel-block')
+
+    const userName = `${user.firstName} ${user.lastName}`;
+
+    entry.innerText = userName;
+
+    const contacts = document.getElementById('contacts');
+
+    contacts.appendChild(entry);
+
+    entry.addEventListener('click', async (event) => {
+        const nameheader = document.getElementById('nameheader');
+
+        nameheader.innerText = userName;
+
+        if (!user.idChat) {
+            const created = await POST('chats', { targetUser_id: user.idUser });
+
+            console.warn(created);
+        }
+    });
+}
+
 // Attach an event listener to when the entire DOM is rendered
 document.addEventListener('DOMContentLoaded', async function () {
     // Load all contacts
     const result = await GET('users');
     console.log(result);
+
+    for (const user of result) {
+        createContact(user);
+    }
 
     // Load session
     session = await GET('session');
