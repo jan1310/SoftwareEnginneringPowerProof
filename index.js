@@ -1,26 +1,38 @@
+const config = require('./config');
+
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
+const knex = require('knex');
 
-app.use(express.json());
-app.use(express.static('public'));
+async function start() {
+    // Initialize db connection
+    const db = knex(config.databaseConnection);
 
-const messages = [
-    {sender: 1, message: 'Hi', timestamp: '2023-05-03 11:18'},
-    {sender: 2, message: 'Moin', timestamp: '2023-05-03 11:18'},
-    {sender: 1, message: 'Was geht?', timestamp: '2023-05-03 11:18'},
-    {sender: 2, message: 'Alles', timestamp: '2023-05-03 11:18'},
-    {sender: 2, message: 'Pls respond', timestamp: '2023-05-03 11:18'},
-];
+    app.set('db', db);
 
-app.get('/api/', async function(req, res) {
-    res.json(messages);
-});
+    const middlewares = [
+        //
+        (app) => app.use(express.json()),
+        (app) => app.use(cookieParser(config.cookieSecret)),
+        require('./middlewares/01_session'),
+        (app) => app.use(express.static('public')),
+    ];
 
-app.post('/api/', async function(req, res) {
-    messages.push(req.body);
-    res.json({success: true});
-});
+    const routes = [
+        //
+        require('./routes/chats'),
+        require('./routes/session'),
+        require('./routes/users'),
+    ];
 
-app.listen(3001, function() {
-    console.log("App started on port 3001");
-})
+    for (const file of middlewares.concat(routes)) {
+        await file(app);
+    }
+
+    app.listen(config.port, function () {
+        console.log(`App started on port ${config.port}`);
+    });
+}
+
+start();

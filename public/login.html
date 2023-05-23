@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bulma.min.css">
+    <title>Login</title>
+</head>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.getElementById('loginform').addEventListener('submit', async function (event) {
+            const name = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+            event.stopPropagation();
+            event.preventDefault();
+
+            try {
+                const response = await fetch('/api/session', {
+                    method: 'post',
+                    body: JSON.stringify({ name, password }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                // And redirect to the application
+                window.location.assign('/');
+            } catch (e) {
+                console.error(e);
+            }
+        })
+    })
+
+</script>
+
+<body>
+    <div class="hero is-fullheight">
+        <div class="hero-body is-justify-content-center is-align-items-center">
+            <form class="columns is-flex is-flex-direction-column box" id="loginform">
+                <div class="column">
+                    <label for="name">Username</label>
+                    <input class="input is-primary" id="name" type="text" name="name">
+                </div>
+                <div class="column">
+                    <label for="password"> Password</label>
+                    <input class="input is-primary" id="password" type="password" name="password">
+                </div>
+                <div class="column">
+                    <button class="button is-primary" type="submit">Login</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>

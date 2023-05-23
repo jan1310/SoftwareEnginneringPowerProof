@@ -25,6 +25,10 @@ function formatNumber(val) {
 function formatTimestamp(date) {
     let d = null;
 
+    if (!isNaN(parseInt(date))) {
+        date = parseInt(date);
+    }
+
     if (date instanceof Date) {
         // Check if a date was passed
         d = date;
@@ -59,9 +63,17 @@ function formatTimestamp(date) {
  * @param {Boolean} me Whether the user is me or not (to determine if to render left or right)
  * @returns undefined
  */
-function createChatBubble(content, timestamp, me = true) {
+function createChatBubble(content, timestamp, me = true, id) {
     // If content is falsy (mainly for '', early return and don't append an empty chat bubble)
     if (!content) {
+        return;
+    }
+
+    const containerID = `message-${id}`;
+
+    const elem = document.getElementById(containerID);
+
+    if (elem) {
         return;
     }
 
@@ -71,6 +83,8 @@ function createChatBubble(content, timestamp, me = true) {
     const time = document.createElement('time');
     // Create the div that contains the text content
     const bubblecontent = document.createElement('div');
+
+    bubble.setAttribute('id', containerID);
 
     // Set the text content to the parameter provided by the function
     bubblecontent.innerHTML = content;
@@ -116,12 +130,14 @@ function getMe() {
  *
  * Also empties the message field so a new message can be entered.
  */
-function sendMessage() {
-    createChatBubble(
-        document.getElementById('message').value,
-        new Date(),
-        true,
-    );
+async function sendMessage() {
+    const content = document.getElementById('message').value;
+
+    const result = await POST(`chats/${activeChatID}/messages`, {
+        content: content,
+    });
+
+    createChatBubble(result.content, result.sentAt, true, result.idMessage);
     document.getElementById('message').value = '';
 }
 
@@ -137,26 +153,123 @@ function handleKeypress(e) {
     }
 }
 
-/**
- * Relatively simply loads the messages from the backend and returns the response as JSON.
- * @returns
- */
-async function load() {
-    return (await fetch('http://localhost:3001/api/')).json();
+let activeContactContainer = null;
+let activeChatID = null;
+
+function clearChatbox() {
+    const chatbox = document.getElementById('chatbox');
+
+    while (chatbox.lastChild) {
+        chatbox.removeChild(chatbox.lastChild);
+    }
 }
+
+function createContact(user) {
+    const name = `${user.firstName} ${user.lastName}`;
+    const lastMessageTimestamp = parseInt(user.maxSentAt);
+    const id = user.idUser;
+
+    const contactPanel = document.getElementById('contacts');
+
+    const entry = document.createElement('a');
+    const timeTag = document.createElement('time');
+
+    timeTag.classList.add('contact-timestamp');
+    timeTag.innerText = `Letzte Nachricht: ${
+        lastMessageTimestamp ? formatTimestamp(lastMessageTimestamp) : 'nie'
+    }`;
+
+    entry.innerText = name;
+    entry.appendChild(timeTag);
+    entry.classList.add('panel-block', 'flex-container');
+
+    contactPanel.appendChild(entry);
+
+    entry.addEventListener('click', async function (event) {
+        if (activeContactContainer === this) {
+            return;
+        }
+
+        if (activeContactContainer) {
+            activeContactContainer.classList.remove('active-contact');
+        }
+
+        this.classList.add('active-contact');
+        activeContactContainer = this;
+
+        document.getElementById('selected-user-name').innerText = name;
+
+        let chatID = user.idChat;
+
+        if (!chatID) {
+            chatID = (await POST('chats', { targetUser: id })).idChat;
+        }
+
+        activeChatID = chatID;
+
+        document.getElementById('chat-half').style.visibility = 'visible';
+
+        const messages = await GET(`chats/${chatID}/messages`);
+
+        lastLoad = messages.length
+            ? messages[messages.length - 1].sentAt
+            : Date.now();
+
+        clearChatbox();
+
+        for (const message of messages) {
+            createChatBubble(
+                message.content,
+                parseInt(message.sentAt),
+                message.user_id === session.idUser,
+                message.idMessage,
+            );
+        }
+
+        if (loadTimeout) clearTimeout(loadTimeout);
+        loadTimeout = setTimeout(updateChat, 3000);
+    });
+}
+
+let lastLoad = null;
+let loadTimeout = null;
+
+async function updateChat() {
+    if (activeChatID) {
+        const messages = await GET(
+            `chats/${activeChatID}/messages?since=${lastLoad}`,
+        );
+        lastLoad = messages.length
+            ? messages[messages.length - 1].sentAt
+            : Date.now();
+
+        for (const message of messages) {
+            createChatBubble(
+                message.content,
+                parseInt(message.sentAt),
+                message.user_id === session.idUser,
+                message.idMessage,
+            );
+        }
+    }
+
+    // Queue again
+    loadTimeout = setTimeout(updateChat, 1000);
+}
+
+let session = null;
 
 // Attach an event listener to when the entire DOM is rendered
 document.addEventListener('DOMContentLoaded', async function () {
-    // Load all messages from the API
-    const messages = await load();
+    // Load all contacts
+    const users = await GET('users');
 
-    // Go through each message...
-    for (const message of messages) {
-        // And create chat bubbles, assuming that we are ID 1.
-        createChatBubble(
-            message.message,
-            new Date(message.timestamp),
-            message.sender == 1,
-        );
+    for (const user of users) {
+        createContact(user);
     }
+
+    // Load session
+    session = await GET('session');
+
+    console.log(session);
 });

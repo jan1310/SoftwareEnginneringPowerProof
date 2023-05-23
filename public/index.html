@@ -2,6 +2,7 @@
 
 <head>
     <link rel="stylesheet" href="bulma.min.css">
+    <script src="http.js"></script>
     <script src="script.js"></script>
 </head>
 
@@ -76,40 +77,34 @@
     .right {
         max-width: 66.66667%
     }
+
+    .contact-timestamp {
+        font-size: 0.75rem;
+    }
+
+    .active-contact {
+        background-color: aliceblue;
+    }
 </style>
 
 <body>
     <div class="columns h-full">
         <div class="column right is-one-third border">
-            <nav class="panel">
+            <nav id="contacts" class="panel">
                 <p class="panel-heading">
                     Kontakte
                 </p>
                 <div class="panel-block">
-                    <p class="control has-icons-left">
+                    <p class="control">
                         <input class="input" type="text" placeholder="Search">
-                        <span class="icon is-left">
-                            <i class="fas fa-search" aria-hidden="true"></i>
-                        </span>
                     </p>
                 </div>
-                <a class="panel-block is-active">
-                    <span class="panel-icon">
-                        <i class="fas fa-book" aria-hidden="true"></i>
-                    </span>
-                    Rainer Zufall
-                </a>
-                <a class="panel-block">
-                    <span class="panel-icon">
-                        <i class="fas fa-book" aria-hidden="true"></i>
-                    </span>
-                    Claire Grube
-                </a>
+                <!-- Hier gehören die Contacts hin -->
             </nav>
         </div>
-        <div class="column border right">
+        <div id="chat-half" style="visibility: hidden;" class="column border right">
             <div class="flex-container h-full">
-                <div class="box has-text-centered">Rainer Zufall</div>
+                <div id="selected-user-name" class="box has-text-centered">Rainer Zufall</div>
                 <div id="chatbox" class="box chat flex-container">
                     <!-- Hier gehören die Chatbubbles hin -->
                 </div>
