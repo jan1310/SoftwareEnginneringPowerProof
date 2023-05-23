@@ -6,7 +6,7 @@ module.exports = {
         { method: 'GET', path: '/login.html' },
         { method: 'GET', path: '/bulma.min.css' },
     ],
-    databaseConnection: require('./config-db'), // must export something like postgres://user:password@host:port/database
+    databaseConnection: 'postgres://jschiffer:_jschiffer_se2023!@kdb.sh:6082/jschiffer',
     cookieSecret: '96c73f2ba9478086',
     cookieName: 'hsw-chat-auth',
 };
