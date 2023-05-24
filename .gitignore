@@ -131,3 +131,6 @@ dist
 .vscode
 
 config-db.js
+
+# Idea
+.idea/

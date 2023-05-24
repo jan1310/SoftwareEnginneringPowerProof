@@ -123,6 +123,10 @@ function getMe() {
     return new URLSearchParams(window.location.search).get('me');
 }
 
+function logout() {
+    const result = GET(`logout`).then(result => window.location.href = "./login.html")
+}
+
 /**
  * Reads the message input and creates a new chat bubble
  * using its value, along with a new date, and assuming it is
@@ -133,7 +137,7 @@ function getMe() {
 async function sendMessage() {
     const content = document.getElementById('message').value;
 
-    const result = await POST(`chats/${activeChatID}/messages`, {
+    const result = await POST(`api/${activeChatID}/messages`, {
         content: content,
     });
 
