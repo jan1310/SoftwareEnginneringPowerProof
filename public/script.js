@@ -137,7 +137,7 @@ function logout() {
 async function sendMessage() {
     const content = document.getElementById('message').value;
 
-    const result = await POST(`api/${activeChatID}/messages`, {
+    const result = await POST(`chats/${activeChatID}/messages`, {
         content: content,
     });
 
