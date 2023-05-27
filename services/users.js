@@ -15,3 +15,16 @@ exports.getAll = async function (session, db) {
 
     return contacts.rows;
 };
+
+exports.createUser = async function (username, firstname, lastname, password, db) {
+    const created = await db('User')
+        .insert({
+            name: username,
+            firstName: firstname,
+            lastName: lastname,
+            password: password,
+        })
+        .returning('*');
+
+    return created[0];
+}

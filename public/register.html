@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="bulma.min.css">
+    <script src='http.js'></script>
+    <title>Register</title>
+</head>
+
+<script>
+    async function register() {
+        if (document.getElementById('password').value === document.getElementById('confirmPassword').value) {
+            if (document.getElementById('password').value != '') {
+                const response = await POST(`user`, {
+                    username: document.getElementById('name').value,
+                    firstname: document.getElementById('firstName').value,
+                    lastname: document.getElementById('lastName').value,
+                    password: document.getElementById('password').value
+                })
+                console.log(response)
+                if (response.error === 'The username already exist') {
+                    document.getElementById('name').value = ''
+                    document.getElementById('name').classList.add('is-danger')
+                    document.getElementById('infomessage').innerText = 'The username is already taken. Please try another one.'
+                    document.getElementById('infobox').classList.remove('is-hidden')
+                } else {
+                    window.location.assign('/');
+                }
+            } else {
+                document.getElementById('infomessage').innerText = 'The password field have to be filled'
+                document.getElementById('infobox').classList.remove('is-hidden')
+                document.getElementById('password').value = ''
+                document.getElementById('confirmPassword').value = ''
+                document.getElementById('password').classList.add('is-danger')
+                document.getElementById('confirmPassword').classList.add('is-danger')
+            }
+        } else {
+            document.getElementById('infomessage').innerText = 'The password is not matching. Please try again.'
+            document.getElementById('infobox').classList.remove('is-hidden')
+            document.getElementById('password').value = ''
+            document.getElementById('confirmPassword').value = ''
+            document.getElementById('password').classList.add('is-danger')
+            document.getElementById('confirmPassword').classList.add('is-danger')
+        }
+    }
+
+    function back() {
+        window.location.assign('/');
+    }
+</script>
+
+<body>
+    <div class="hero is-fullheight">
+        <article class="message is-warning is-hidden" id="infobox">
+            <div class="message-body" id="infomessage"></div>
+        </article>
+        <div class="hero-body is-justify-content-center is-align-items-center">
+            <form class="columns is-flex is-flex-direction-column box" id="registerform">
+                <div class="column">
+                    <label for="name">Username</label>
+                    <input class="input is-primary" id="name" type="text" name="name">
+                </div>
+                <div class="column">
+                    <label for="name">First Name</label>
+                    <input class="input is-primary" id="firstName" type="text" name="firstName">
+                </div>
+                <div class="column">
+                    <label for="name">Last Name</label>
+                    <input class="input is-primary" id="lastName" type="text" name="lastName">
+                </div>
+                <div class="column">
+                    <label for="password">Password</label>
+                    <input class="input is-primary" id="password" type="password" name="password">
+                </div>
+                <div class="column">
+                    <label for="password">Confirm Password</label>
+                    <input class="input is-primary" id="confirmPassword" type="password" name="confirmPassword">
+                </div>
+                <div class="column">
+                    <button class="button is-primary" type="button" onclick="register()">Register</button>
+                    <button class="button is-primary" type="button" onclick="back()">Back</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>

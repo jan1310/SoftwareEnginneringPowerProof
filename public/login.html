@@ -16,7 +16,6 @@
             const password = document.getElementById('password').value;
             event.stopPropagation();
             event.preventDefault();
-
             try {
                 const response = await fetch('/api/session', {
                     method: 'post',
@@ -26,15 +25,25 @@
                     }
                 });
 
-                const data = await response.json();
+                if (response.ok) {
+                    const data = await response.json();
 
-                // And redirect to the application
-                window.location.assign('/');
+                    // And redirect to the application
+                    window.location.assign('/');
+                }
+                else {
+                    document.getElementById('name').classList.add('is-danger')
+                    document.getElementById('password').classList.add('is-danger')
+                }
             } catch (e) {
                 console.error(e);
             }
         })
     })
+
+    function register() {
+        window.location.assign('/register.html');
+    }
 
 </script>
 
@@ -47,11 +56,12 @@
                     <input class="input is-primary" id="name" type="text" name="name">
                 </div>
                 <div class="column">
-                    <label for="password"> Password</label>
+                    <label for="password">Password</label>
                     <input class="input is-primary" id="password" type="password" name="password">
                 </div>
                 <div class="column">
                     <button class="button is-primary" type="submit">Login</button>
+                    <button class="button is-primary" type="button" onclick="register()">Register</button>
                 </div>
             </form>
         </div>
