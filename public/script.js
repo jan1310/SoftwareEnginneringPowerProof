@@ -87,7 +87,12 @@ function createChatBubble(content, timestamp, me = true, id) {
     bubble.setAttribute('id', containerID);
 
     // Set the text content to the parameter provided by the function
-    bubblecontent.innerHTML = content;
+    const contentText = document.createElement('p')
+    contentText.innerHTML = content
+    const trashCan = document.createElement('i')
+    trashCan.classList.add('fa-solid', 'fa-trash')
+    bubblecontent.appendChild(contentText)
+    bubblecontent.appendChild(trashCan)
     // Set the text of the time tag by formatting the timestamp provided to this function
     time.innerHTML = formatTimestamp(timestamp);
 
