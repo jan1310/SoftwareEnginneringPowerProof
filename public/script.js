@@ -129,17 +129,18 @@ function createChatBubble(content, timestamp, me = true, id) {
     // Set the text content to the parameter provided by the function
     const contentText = document.createElement('p');
     contentText.innerText = content;
-    
-
-    const trashCan = document.createElement('i');
-    trashCan.setAttribute('id', id)
-    trashCan.classList.add('fa-solid', 'fa-trash', 'is-pulled-right');
-    trashCan.setAttribute('onClick', 'deleteMessage(this)');
     bubblecontent.appendChild(contentText);
     // Set the text of the time tag by formatting the timestamp provided to this function
     time.innerHTML = formatTimestamp(timestamp);
     messageheader.appendChild(time);
-    messageheader.appendChild(trashCan);
+    if (me) {
+        const trashCan = document.createElement('i');
+        trashCan.setAttribute('id', id)
+        trashCan.classList.add('fa-solid', 'fa-trash', 'is-pulled-right');
+        trashCan.setAttribute('onClick', 'deleteMessage(this)');
+
+        messageheader.appendChild(trashCan);
+    }
     // Append the time and content to the bubble parent container
     bubble.appendChild(messageheader);
     bubble.appendChild(bubblecontent);
@@ -161,7 +162,7 @@ function createChatBubble(content, timestamp, me = true, id) {
     scrollChatbox();
 }
 
-function deleteMessage(id){
+function deleteMessage(id) {
     const idMessage = id.getAttribute('id');
     DELETE(`chats/deleteMessage/${idMessage}`).then(result => {
         document.getElementById(`message-${idMessage}`).remove();
@@ -177,7 +178,7 @@ function getMe() {
 }
 
 function logout() {
-     GET(`logout`).then(result => window.location.href = "./login.html")
+    GET(`logout`).then(result => window.location.href = "./login.html")
 }
 
 /**
