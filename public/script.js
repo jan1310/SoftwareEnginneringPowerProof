@@ -88,7 +88,7 @@ function createChatBubble(content, timestamp, me = true, id) {
 
     // Set the text content to the parameter provided by the function
     const contentText = document.createElement('p')
-    contentText.innerHTML = content
+    contentText.innerText = content
     const trashCan = document.createElement('i')
     trashCan.classList.add('fa-solid', 'fa-trash')
     bubblecontent.appendChild(contentText)
