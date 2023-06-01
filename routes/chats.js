@@ -17,7 +17,35 @@ module.exports = async function (router) {
 
         res.json(result);
     });
+   
+    router.delete('/api/chats/deleteMessage/:messageId', async function (req, res) {
+        const idMessage = req.params.messageId;
 
+       console.log(idMessage);
+        if (isNaN(parseInt(idMessage))) {
+            return res
+                .status(400)
+                .json({ error: 'Invalid ID passed, expected a numeric ID' });
+        }
+
+
+        try {
+            const result = await chatService.deleteMessages(
+                idMessage,
+                req.session,
+                req.app.get('db'),
+            );
+
+            res.json(result);
+        } catch (e) {
+            if (e.message === constants.MESSAGE_NOT_FOUND) {
+                return res
+                    .status(404)
+                    .json({ error: constants.MESSAGE_NOT_FOUND });
+            }
+        }
+    });
+ 
     router.get('/api/chats/:id/messages', async function (req, res) {
         const idChat = req.params.id;
 
@@ -50,6 +78,7 @@ module.exports = async function (router) {
             }
         }
     });
+    
 
     router.post('/api/chats/:id/messages', async function (req, res) {
         const idChat = req.params.id;
