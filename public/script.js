@@ -81,7 +81,7 @@ function createChatBubble(content, timestamp, me = true, id) {
     let yearNewChild;
     if (chatbox.lastChild) {
         const lastChild = chatbox.lastChild;
-        const dateLastChild = lastChild.firstChild.innerHTML;
+        const dateLastChild = lastChild.firstChild.firstChild.innerHTML;
         const dateNewChild = formatTimestamp(timestamp);
 
         dayLastChild = dateLastChild.slice(0, 2);
