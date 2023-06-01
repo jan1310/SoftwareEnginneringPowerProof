@@ -69,6 +69,45 @@ function createChatBubble(content, timestamp, me = true, id) {
         return;
     }
 
+    // Find the chatbox
+    const chatbox = document.getElementById('chatbox');
+
+
+    let dayLastChild;
+    let dayNewChild;
+    let monthLastChild;
+    let monthNewChild;
+    let yearLastChild;
+    let yearNewChild;
+    if (chatbox.lastChild) {
+        const lastChild = chatbox.lastChild;
+        const dateLastChild = lastChild.firstChild.innerHTML;
+        const dateNewChild = formatTimestamp(timestamp);
+
+        dayLastChild = dateLastChild.slice(0, 2);
+        dayNewChild = dateNewChild.slice(0, 2);
+        monthLastChild = dateLastChild.slice(3, 5);
+        monthNewChild = dateNewChild.slice(3, 5);
+        yearLastChild = dateLastChild.slice(6, 10);
+        yearNewChild = dateNewChild.slice(6, 10);
+
+    }
+    if (!chatbox.lastChild || (yearLastChild < yearNewChild ||
+            (monthLastChild < monthNewChild && yearLastChild <= yearNewChild) ||
+            (dayLastChild < dayNewChild && monthLastChild <= monthNewChild && yearLastChild <= yearNewChild))) {
+        const date = document.createElement('p');
+        date.classList.add('date-separator');
+        if (formatTimestamp(Date.now()).slice(0, 10) === formatTimestamp(timestamp).slice(0, 10)) {
+            date.innerHTML = "Today";
+        } else if (formatTimestamp(Date.now() - 86400000).slice(0, 10) === formatTimestamp(timestamp).slice(0, 10)) {
+            date.innerHTML = "Yesterday";
+        } else {
+            date.innerHTML = formatTimestamp(timestamp).slice(0, 10);
+        }
+        chatbox.appendChild(date);
+    }
+
+
     const containerID = `message-${id}`;
 
     const elem = document.getElementById(containerID);
@@ -109,9 +148,6 @@ function createChatBubble(content, timestamp, me = true, id) {
     time.classList.add('is-size-7');
     // (technically unnecessary since size 6 is 1.0 rem which is normal font size)
     bubblecontent.classList.add('is-size-6');
-
-    // Find the chatbox
-    const chatbox = document.getElementById('chatbox');
 
     // Append the bubble at the bottom
     chatbox.appendChild(bubble);
@@ -184,9 +220,8 @@ function createContact(user) {
     const timeTag = document.createElement('time');
 
     timeTag.classList.add('contact-timestamp');
-    timeTag.innerText = `Letzte Nachricht: ${
-        lastMessageTimestamp ? formatTimestamp(lastMessageTimestamp) : 'nie'
-    }`;
+    timeTag.innerText = `Letzte Nachricht: ${lastMessageTimestamp ? formatTimestamp(lastMessageTimestamp) : 'nie'
+        }`;
 
     entry.innerText = name;
     entry.appendChild(timeTag);
@@ -211,7 +246,9 @@ function createContact(user) {
         let chatID = user.idChat;
 
         if (!chatID) {
-            chatID = (await POST('chats', { targetUser: id })).idChat;
+            chatID = (await POST('chats', {
+                targetUser: id
+            })).idChat;
         }
 
         activeChatID = chatID;
@@ -220,9 +257,9 @@ function createContact(user) {
 
         const messages = await GET(`chats/${chatID}/messages`);
 
-        lastLoad = messages.length
-            ? messages[messages.length - 1].sentAt
-            : Date.now();
+        lastLoad = messages.length ?
+            messages[messages.length - 1].sentAt :
+            Date.now();
 
         clearChatbox();
 
@@ -248,9 +285,9 @@ async function updateChat() {
         const messages = await GET(
             `chats/${activeChatID}/messages?since=${lastLoad}`,
         );
-        lastLoad = messages.length
-            ? messages[messages.length - 1].sentAt
-            : Date.now();
+        lastLoad = messages.length ?
+            messages[messages.length - 1].sentAt :
+            Date.now();
 
         for (const message of messages) {
             createChatBubble(
