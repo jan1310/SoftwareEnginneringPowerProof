@@ -80,6 +80,7 @@ function createChatBubble(content, timestamp, me = true, id) {
     // Create the new surrounding div for the bubble
     const bubble = document.createElement('div');
     // Create the time tag
+    const messageheader = document.createElement('div');
     const time = document.createElement('time');
     // Create the div that contains the text content
     const bubblecontent = document.createElement('div');
@@ -87,17 +88,21 @@ function createChatBubble(content, timestamp, me = true, id) {
     bubble.setAttribute('id', containerID);
 
     // Set the text content to the parameter provided by the function
-    const contentText = document.createElement('p')
-    contentText.innerText = content
-    const trashCan = document.createElement('i')
-    trashCan.classList.add('fa-solid', 'fa-trash')
-    bubblecontent.appendChild(contentText)
-    bubblecontent.appendChild(trashCan)
+    const contentText = document.createElement('p');
+    contentText.innerText = content;
+    
+
+    const trashCan = document.createElement('i');
+    trashCan.setAttribute('id', id)
+    trashCan.classList.add('fa-solid', 'fa-trash', 'is-pulled-right');
+    trashCan.setAttribute('onClick', 'deleteMessage(this)');
+    bubblecontent.appendChild(contentText);
     // Set the text of the time tag by formatting the timestamp provided to this function
     time.innerHTML = formatTimestamp(timestamp);
-
+    messageheader.appendChild(time);
+    messageheader.appendChild(trashCan);
     // Append the time and content to the bubble parent container
-    bubble.appendChild(time);
+    bubble.appendChild(messageheader);
     bubble.appendChild(bubblecontent);
 
     // Add appropriate child classes
@@ -120,6 +125,13 @@ function createChatBubble(content, timestamp, me = true, id) {
     scrollChatbox();
 }
 
+function deleteMessage(id){
+    const idMessage = id.getAttribute('id');
+    DELETE(`chats/deleteMessage/${idMessage}`).then(result => {
+        document.getElementById(`message-${idMessage}`).remove();
+    })
+}
+
 /**
  * (technically not yet discussed)
  * @returns {string | null} the value of the "me" query param
@@ -129,7 +141,7 @@ function getMe() {
 }
 
 function logout() {
-    const result = GET(`logout`).then(result => window.location.href = "./login.html")
+     GET(`logout`).then(result => window.location.href = "./login.html")
 }
 
 /**

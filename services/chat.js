@@ -21,6 +21,24 @@ exports.createChat = async function (targetUser, session, db) {
         return existingChat;
     }
 };
+exports.deleteMessages = async function (message_id,session, db){
+    const idUser = session.idUser;
+
+    const targetChat = await db('Message')
+    .where({ user_id: idUser }).where({idMessage: message_id})
+    .first('idMessage');
+
+    if (!targetChat) {
+        throw new Error(constants.MESSAGE_NOT_FOUND);
+    }
+
+const message = db('Message')
+.where({idMessage: message_id})
+.del();
+const result = await message;
+console.log(result);
+return result;
+}
 
 exports.getMessages = async function (idChat, session, db, since = null) {
     const idUser = session.idUser;
