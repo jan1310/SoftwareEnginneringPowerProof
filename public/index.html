@@ -92,12 +92,17 @@
         text-align: center;
         font-size: 0.75rem;
     }
+
+    .contacts {
+        overflow: auto;
+        flex-grow: 1;
+    }
 </style>
 
 <body>
     <div class='columns h-full'>
         <div class='column right is-one-third border'>
-            <nav id='contacts' class='panel'>
+            <nav id='contacts' class='panel flex-container h-full'>
                 <p class='panel-heading'>
                     <i class="fa-solid fa-address-book"></i>
                     Kontakte
@@ -117,7 +122,9 @@
                     </div>
 
                 </div>
-                <!-- Hier gehören die Contacts hin -->
+                <div id="contactsBox" class="box contacts flex-box">
+                    <!-- Hier gehören die Contacts hin -->
+                </div>
             </nav>
         </div>
         <div id='chat-half' style='visibility: hidden;' class='column border right'>

@@ -90,7 +90,6 @@ function createChatBubble(content, timestamp, me = true, id) {
         monthNewChild = dateNewChild.slice(3, 5);
         yearLastChild = dateLastChild.slice(6, 10);
         yearNewChild = dateNewChild.slice(6, 10);
-
     }
     if (!chatbox.lastChild || (yearLastChild < yearNewChild ||
             (monthLastChild < monthNewChild && yearLastChild <= yearNewChild) ||
@@ -227,7 +226,7 @@ function createContact(user) {
     const lastMessageTimestamp = parseInt(user.maxSentAt);
     const id = user.idUser;
 
-    const contactPanel = document.getElementById('contacts');
+    const contactPanel = document.getElementById('contactsBox');
 
     const entry = document.createElement('a');
     const timeTag = document.createElement('time');
