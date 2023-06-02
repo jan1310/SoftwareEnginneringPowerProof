@@ -1,11 +1,9 @@
 async function httpRequest(url, verb, body, headers, raw) {
     const response = await fetch(
-        `https://${location.hostname}:${location.port}/api/` + url,
-        {
+        `//${location.hostname}:${location.port}/api/` + url, {
             method: verb,
             body,
-            headers: Object.assign(
-                {
+            headers: Object.assign({
                     'Content-Type': 'application/json',
                 },
                 headers || {},
