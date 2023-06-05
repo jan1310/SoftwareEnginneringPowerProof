@@ -105,6 +105,18 @@
     .fivePercentHeight {
         height: 5%;
     }
+
+    .buttons {
+        margin-left: auto;
+    }
+
+    .w-20 {
+        width: 20%;
+    }
+
+    .w-80 {
+        width: 80%;
+    }
 </style>
 
 <body>
@@ -129,23 +141,18 @@
     </div>
     <div class="h-full">
         <nav class="navbar fivePercentHeight" role="navigation" aria-label="main navigation">
-            <div class="navbar-brand">
-                <div class="navbar-item">
+            <div class="navbar-brand w-full">
+                <div class="navbar-item w-20">
                     <img src="Logo.jpg">
                 </div>
-            </div>
-
-            <div id="navbarBasicExample" class="navbar-menu">
-                <div class="navbar-end">
-                    <div class="navbar-item">
-                        <div class="buttons">
-                            <button id='logout' class='button' onclick='logout()'>
-                                Logout&nbsp;&nbsp;<i class="fa-solid fa-arrow-right-from-bracket"></i>
-                            </button>
-                            <button id='deleteUser' class="button is-danger" onclick='openModal()'>
-                                Delete Account&nbsp;&nbsp;<i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
+                <div class="navbar-item w-80">
+                    <div class="buttons">
+                        <button id='logout' class='button' onclick='logout()'>
+                            Logout&nbsp;&nbsp;<i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </button>
+                        <button id='deleteUser' class="button is-danger" onclick='openModal()'>
+                            Delete Account&nbsp;&nbsp;<i class="fa-solid fa-trash"></i>
+                        </button>
                     </div>
                 </div>
             </div>
