@@ -9,6 +9,7 @@ module.exports = async function (router) {
                 .json({ error: 'Expected a targetUser in the body' });
         }
 
+        try {
         const result = await chatService.createChat(
             req.body.targetUser,
             req.session,
@@ -16,6 +17,15 @@ module.exports = async function (router) {
         );
 
         res.json(result);
+        } catch (e) {
+            if (e.code === '23503') {
+                return res
+                    .status(404)
+                    .json({ error: constants.USER_NOT_FOUND });
+            } else{
+                throw new Error('Undefined');
+            }
+        }
     });
    
     router.delete('/api/chats/deleteMessage/:messageId', async function (req, res) {

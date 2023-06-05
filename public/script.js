@@ -190,12 +190,16 @@ function logout() {
 async function sendMessage() {
     const content = document.getElementById('message').value;
 
-    const result = await POST(`chats/${activeChatID}/messages`, {
+    const response = await POST(`chats/${activeChatID}/messages`, {
         content: content,
-    });
-
-    createChatBubble(result.content, result.sentAt, true, result.idMessage);
-    document.getElementById('message').value = '';
+    }, true);
+    if (response.ok) {
+        const result = await response.json();
+        createChatBubble(result.content, result.sentAt, true, result.idMessage);
+        document.getElementById('message').value = '';
+    } else {
+        location.reload();
+    }
 }
 
 /**
@@ -258,30 +262,44 @@ function createContact(user) {
         let chatID = user.idChat;
 
         if (!chatID) {
-            chatID = (await POST('chats', {
+            const response = await POST('chats', {
                 targetUser: id
-            })).idChat;
+            }, true);
+            if (response.ok) {
+                chatID = (await response.json()).idChat;
+            } else {
+                clearContacts();
+                loadContacts();
+            }
         }
 
         activeChatID = chatID;
 
         document.getElementById('chat-half').style.visibility = 'visible';
 
-        const messages = await GET(`chats/${chatID}/messages`);
-
-        lastLoad = messages.length ?
-            messages[messages.length - 1].sentAt :
-            Date.now();
-
         clearChatbox();
 
-        for (const message of messages) {
-            createChatBubble(
-                message.content,
-                parseInt(message.sentAt),
-                message.user_id === session.idUser,
-                message.idMessage,
-            );
+        const response = await GET(`chats/${chatID}/messages`, true);
+
+        if (response.ok) {
+            const messages = await response.json();
+
+            lastLoad = messages.length ?
+                messages[messages.length - 1].sentAt :
+                Date.now();
+
+
+            for (const message of messages) {
+                createChatBubble(
+                    message.content,
+                    parseInt(message.sentAt),
+                    message.user_id === session.idUser,
+                    message.idMessage,
+                );
+            }
+        } else {
+            clearContacts();
+            loadContacts();
         }
 
         if (loadTimeout) clearTimeout(loadTimeout);
@@ -294,20 +312,26 @@ let loadTimeout = null;
 
 async function updateChat() {
     if (activeChatID) {
-        const messages = await GET(
-            `chats/${activeChatID}/messages?since=${lastLoad}`,
+        const response = await GET(
+            `chats/${activeChatID}/messages?since=${lastLoad}`, true
         );
-        lastLoad = messages.length ?
-            messages[messages.length - 1].sentAt :
-            Date.now();
 
-        for (const message of messages) {
-            createChatBubble(
-                message.content,
-                parseInt(message.sentAt),
-                message.user_id === session.idUser,
-                message.idMessage,
-            );
+        if (response.ok) {
+            const messages = await response.json();
+            lastLoad = messages.length ?
+                messages[messages.length - 1].sentAt :
+                Date.now();
+
+            for (const message of messages) {
+                createChatBubble(
+                    message.content,
+                    parseInt(message.sentAt),
+                    message.user_id === session.idUser,
+                    message.idMessage,
+                );
+            }
+        } else {
+            location.reload();
         }
     }
 
@@ -317,8 +341,7 @@ async function updateChat() {
 
 let session = null;
 
-// Attach an event listener to when the entire DOM is rendered
-document.addEventListener('DOMContentLoaded', async function () {
+async function loadContacts() {
     // Load all contacts
     const users = await GET('users');
 
@@ -330,4 +353,33 @@ document.addEventListener('DOMContentLoaded', async function () {
     session = await GET('session');
 
     console.log(session);
+}
+
+function clearContacts() {
+    const contactsBox = document.getElementById('contactsBox');
+    while (contactsBox.lastChild) {
+        contactsBox.removeChild(contactsBox.lastChild);
+    }
+}
+
+function openModal() {
+    document.getElementById('modal').classList.add('is-active');
+}
+
+function closeModal() {
+    document.getElementById('modal').classList.remove('is-active');
+}
+
+async function deleteUser() {
+    const response = await DELETE(`user/${session.idUser}`, true);
+    if (response.ok) {
+        location.reload();
+    }
+}
+
+
+
+// Attach an event listener to when the entire DOM is rendered
+document.addEventListener('DOMContentLoaded', async function () {
+    loadContacts();
 });

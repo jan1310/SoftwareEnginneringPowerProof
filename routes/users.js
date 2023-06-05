@@ -26,4 +26,19 @@ module.exports = async function (app) {
             }
         }
     });
+
+    app.delete('/api/user/:id', async function (req, res) {
+        if(isNaN(parseInt(req.params.id))) {
+            return res.status(400).json({ error: 'Invalid ID passed, expected a numeric ID' });
+        }
+
+        try {
+            const result = await service.deleteUser(req.params.id, req.app.get('db'));
+            return res.json(result);
+        }catch (e) {
+            if (e.message === constants.USER_NOT_FOUND) {
+                return res.status(404).json({ error: constants.USER_NOT_FOUND });
+            }
+        }
+    });
 };
